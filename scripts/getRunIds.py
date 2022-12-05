@@ -10,8 +10,7 @@ def getRids(dirPath):
     
     for f in os.listdir(dirPath):
         sampleType = f.split("_")[0]
-        fName = "".join(f.split("_")[1:]).replace(".fastq.gz", "")
-
+        fName = f.replace(".fastq.gz", "").replace("poly_", "").replace("total_", "")
         sTypes.append(sampleType)
         runIds.append(fName)
         
