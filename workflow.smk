@@ -127,5 +127,7 @@ rule htseq_count:
     wildcard_constraints:
         sample='|'.join([re.escape(x) for x in set(samples)]),
         runId='|'.join([re.escape(x) for x in set(runIds)]),
+    params:
+        minQual=int(config['minQual'])
     shell:
-        "htseq-count -f bam {input.bam} {input.annotations} > {output}"
+        "htseq-count -f bam -a {params.minQual} {input.bam} {input.annotations} > {output}"

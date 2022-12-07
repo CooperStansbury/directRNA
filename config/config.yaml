@@ -4,4 +4,5 @@ annotations_path: "/nfs/turbo/umms-indikar/shared/projects/directRNA/reference/H
 fastq_path: "/nfs/turbo/umms-indikar/shared/projects/directRNA/reads/"
 R_path: "~/miniconda3/bin/Rscript"
 minimap2_args: "-ax splice -uf -k14"
+minQual: 0
 threads: 36
