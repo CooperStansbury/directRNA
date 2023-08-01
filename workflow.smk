@@ -4,6 +4,8 @@ from pathlib import Path
 import os
 from scripts import getRunIds
 
+
+
 BASE_DIR = Path(workflow.basedir)
 configfile: str(BASE_DIR) + "/config/config.yaml"
 
@@ -13,6 +15,8 @@ REFERENCE = config['ref_path']
 ANNOTATIONS = config['annotations_path']
 
 runIds = getRunIds.getRids(INPUT)
+
+
 
 rule all:
     input:
@@ -25,8 +29,7 @@ rule all:
         expand(f"{OUTPUT}counts/{{runId}}.counts.txt", zip, runId=runIds),   
         expand(f"{OUTPUT}counts/{{runId}}.featureCounts", runId=runIds),
         expand(f"{OUTPUT}NanoCount/{{runId}}.tsv", runId=runIds),
-        # expand(f"{OUTPUT}jellyfish/{{runId}}.histo", zip, runId=runIds),  
-
+        expand(f"{OUTPUT}jellyfish/{{runId}}.histo", zip, runId=runIds),  
 
 rule get_gene_names:
     input:
@@ -115,7 +118,6 @@ rule jellyfish_count:
         OUTPUT + "logs/{runId}.jf.log",
     params:
         kmer_length=21,
-        size="1G",
         extra="--canonical",
     threads:
         8

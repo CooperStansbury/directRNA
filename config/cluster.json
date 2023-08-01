@@ -1,11 +1,11 @@
 {"__default__": {
-    "account_slurm": "indikar0",
+    "account_slurm": "indikar1",
     "partition": "standard",
     "jobname": "{rule}.{wildcards}",
     "nodes": 1,
     "procs" : 1,
     "cpus": 36,
-    "mem": "180G",
+    "mem": "25G",
     "walltime": "96:00:00",
     "email": "cstansbu@umich.edu",
     "mailon": "a",

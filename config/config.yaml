@@ -1,8 +1,8 @@
 output_path: "/scratch/indikar_root/indikar1/cstansbu/direct_RNA/"
 ref_path: "/nfs/turbo/umms-indikar/shared/projects/directRNA/reference/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz" 
 annotations_path: "/nfs/turbo/umms-indikar/shared/projects/directRNA/reference/Homo_sapiens.GRCh38.107.gtf"
-fastq_path: "/nfs/turbo/umms-indikar/shared/projects/wound_healing/RNAseq/WHp1.2/merged/"
+fastq_path: "/nfs/turbo/umms-indikar/shared/projects/wound_healing/RNAseq/merged/"
 R_path: "~/miniconda3/bin/Rscript"
-minimap2_args: "-ax splice -uf -k14" 
+minimap2_args: "-ax splice -uf -k14 -N 10" 
 minQual: 0
 threads: 36
