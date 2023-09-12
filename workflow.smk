@@ -4,8 +4,6 @@ from pathlib import Path
 import os
 from scripts import getRunIds
 
-
-
 BASE_DIR = Path(workflow.basedir)
 configfile: str(BASE_DIR) + "/config/config.yaml"
 
@@ -16,20 +14,23 @@ ANNOTATIONS = config['annotations_path']
 
 runIds = getRunIds.getRids(INPUT)
 
-
-
 rule all:
     input:
         OUTPUT + 'references/geneNames.csv',
         OUTPUT + 'references/reference.mmi',
         OUTPUT + 'references/reference.fa',
+        OUTPUT + 'talon/database.db',
+        OUTPUT + 'talon/config.csv',
+        OUTPUT + 'run_talon.done',
         expand(f"{OUTPUT}fastqc/{{runId}}.html", zip, runId=runIds),  
         expand(f"{OUTPUT}alignments/{{runId}}.sorted.bam.bai", zip, runId=runIds),   
+        expand(f"{OUTPUT}bedfiles/{{runId}}.bed", zip, runId=runIds),   
         expand(f"{OUTPUT}stats/{{runId}}.bamstats", zip, runId=runIds),  
         expand(f"{OUTPUT}counts/{{runId}}.counts.txt", zip, runId=runIds),   
         expand(f"{OUTPUT}counts/{{runId}}.featureCounts", runId=runIds),
         expand(f"{OUTPUT}NanoCount/{{runId}}.tsv", runId=runIds),
-        expand(f"{OUTPUT}jellyfish/{{runId}}.histo", zip, runId=runIds),  
+        expand(f"{OUTPUT}talon/alignments/{{runId}}_labeled.sam", zip, runId=runIds),  
+
 
 rule get_gene_names:
     input:
@@ -109,6 +110,19 @@ rule make_bam:
         "samtools view -Sb {input} > {output}"
 
 
+rule bamtobed:
+    input:
+        OUTPUT + 'alignments/{runId}.bam'
+    output:
+        OUTPUT + 'bedfiles/{runId}.bed'
+    log:
+        "logs/bamtobed/{runId}.log",
+    params:
+        extra="-bedpe",  # optional parameters
+    wrapper:
+        "v2.2.1/bio/bedtools/bamtobed"
+
+
 rule jellyfish_count:
     input:
         fastq=INPUT + '{runId}.fastq.gz',
@@ -118,6 +132,7 @@ rule jellyfish_count:
         OUTPUT + "logs/{runId}.jf.log",
     params:
         kmer_length=21,
+        size="1G",
         extra="--canonical",
     threads:
         8
@@ -217,3 +232,58 @@ rule htseq_count:
         minQual=int(config['minQual'])
     shell:
         "htseq-count -f bam -a {params.minQual} {input.bam} {input.annotations} > {output}"
+
+
+rule talon_build:
+    input:
+        gtf=ANNOTATIONS,
+    output:
+        OUTPUT + 'talon/database.db'
+    params:
+        outpath_root=OUTPUT + 'talon/database',
+        db_name=config['talon_db_name']
+    shell:
+        "talon_initialize_database --f {input.gtf} --g {params.db_name} --o {params.outpath_root}"
+
+
+rule talon_label_reads:
+    input:
+        sam=OUTPUT + 'alignments/{runId}.sam',
+        ref=OUTPUT + 'references/reference.fa',
+    output:
+        OUTPUT + 'talon/alignments/{runId}_labeled.sam',
+        OUTPUT + 'talon/alignments/{runId}_read_labels.tsv'
+    threads:
+        8
+    params:
+        outpath_root=OUTPUT + 'talon/alignments/{runId}',
+        tmp=OUTPUT + 'talon/temp/{runId}'
+    shell:
+        "talon_label_reads --f {input.sam} --g {input.ref} --t {threads} --tmpDir {params.tmp} --deleteTmp --o {params.outpath_root}"
+
+rule make_talon_config:
+    input:
+        expand(f"{OUTPUT}talon/alignments/{{runId}}_labeled.sam", zip, runId=runIds),  
+    output:
+        OUTPUT + 'talon/config.csv',
+    params:
+        platform=config['talon_platform'],
+        sample=config['talon_sample_type'],
+    shell:
+        "python scripts/makeTalonConfig.py {params.platform} {params.sample} {output} {input}"
+
+rule run_talon:
+    input:
+        db=OUTPUT + 'talon/database.db',
+        cf=OUTPUT + 'talon/config.csv',
+    output:
+        touch(OUTPUT + 'run_talon.done')
+    params:
+        db_name=config['talon_db_name'],
+        prefix= OUTPUT + 'talon/talon_run',
+        tmp=OUTPUT + 'talon/temp/'
+    threads:
+        16
+    shell:
+        "talon --f {input.cf} --db {input.db} --build {params.db_name} -t {threads} --tmpDir {params.tmp} --o {params.prefix}"
+        

@@ -7,7 +7,6 @@
 #SBATCH --cpus-per-task=36
 #SBATCH --mem=100G
 #SBATCH --time=96:00:00
-#SBATCH --account=indikar0
 #SBATCH --partition=standard
 
 SLURM_CONFIG='config/slurm'

@@ -1,5 +1,5 @@
 {"__default__": {
-    "account_slurm": "indikar1",
+    "account_slurm": "indikar0",
     "partition": "standard",
     "jobname": "{rule}.{wildcards}",
     "nodes": 1,

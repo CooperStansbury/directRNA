@@ -3,6 +3,9 @@ ref_path: "/nfs/turbo/umms-indikar/shared/projects/directRNA/reference/Homo_sapi
 annotations_path: "/nfs/turbo/umms-indikar/shared/projects/directRNA/reference/Homo_sapiens.GRCh38.107.gtf"
 fastq_path: "/nfs/turbo/umms-indikar/shared/projects/wound_healing/RNAseq/merged/"
 R_path: "~/miniconda3/bin/Rscript"
-minimap2_args: "-ax splice -uf -k14 -N 10" 
+minimap2_args: "-ax splice -uf -k14 -N 10 --MD" 
+talon_db_name: 'GRCh38'
+talon_platform: 'ONT'
+talon_sample_type: 'FB'
 minQual: 0
-threads: 36
+threads: 35
