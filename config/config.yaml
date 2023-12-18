@@ -1,11 +1,11 @@
-output_path: "/scratch/indikar_root/indikar1/cstansbu/direct_RNA/"
+output_path: "/scratch/indikar_root/indikar1/cstansbu/ihep/"
 ref_path: "/nfs/turbo/umms-indikar/shared/projects/directRNA/reference/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz" 
 annotations_path: "/nfs/turbo/umms-indikar/shared/projects/directRNA/reference/Homo_sapiens.GRCh38.107.gtf"
-fastq_path: "/nfs/turbo/umms-indikar/shared/projects/wound_healing/RNAseq/merged/"
+fastq_path: "/nfs/turbo/umms-indikar/shared/projects/HSC/data/iHep_experiment/merged_fastq/"
 R_path: "~/miniconda3/bin/Rscript"
-minimap2_args: "-ax splice -uf -k14 -N 10 --MD" 
+minimap2_args: "-ax map-ont --MD" 
 talon_db_name: 'GRCh38'
 talon_platform: 'ONT'
-talon_sample_type: 'FB'
+talon_sample_type: 'hepatocyte'
 minQual: 0
 threads: 35

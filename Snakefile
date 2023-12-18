@@ -13,6 +13,7 @@ REFERENCE = config['ref_path']
 ANNOTATIONS = config['annotations_path']
 
 runIds = getRunIds.getRids(INPUT)
+print(runIds)
 
 rule all:
     input:
@@ -273,6 +274,7 @@ rule make_talon_config:
         sample=config['talon_sample_type'],
     shell:
         "python scripts/makeTalonConfig.py {params.platform} {params.sample} {output} {input}"
+
 
 rule run_talon:
     input:
